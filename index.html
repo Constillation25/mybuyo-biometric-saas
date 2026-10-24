@@ -1,21 +1,1701 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>mybuyo-biometric-saas</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
-        h1 { color: #24292e; }
-        .info { background: #f6f8fa; padding: 15px; border-radius: 6px; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyBuy'O™ - Biometric Payment Gateway by FacePrintPay Inc.</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fontsource-inter@4.5.0/index.css">
+<style>
+  * { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+  body { background: #000; color: #fff; overflow-x: hidden; }
+  .cash-green { color: #00D632; }
+  .bg-cash-green { background: #00D632; }
+  .border-cash-green { border-color: #00D632; }
+  
+  .card {
+    background: #1C1C1E;
+    border-radius: 20px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .card:hover { transform: translateY(-2px); }
+  
+  .btn-primary {
+    background: #00D632;
+    color: #000;
+    font-weight: 700;
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #00b82b; transform: scale(1.02); }
+  .btn-primary:active { transform: scale(0.98); }
+  
+  .btn-secondary {
+    background: #2C2C2E;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: #3A3A3C; }
+  
+  .btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid #2C2C2E;
+    font-weight: 600;
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: #00D632; color: #00D632; }
+  
+  .scanner-ring { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  @keyframes pulse-ring {
+    0%, 100% { opacity: 0.4; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+  }
+  
+  .scan-line { animation: scan 2.5s ease-in-out infinite; }
+  @keyframes scan {
+    0%, 100% { transform: translateY(-60px); opacity: 0; }
+    10%, 90% { opacity: 1; }
+    50% { transform: translateY(60px); }
+  }
+  
+  .fade-in { animation: fadeIn 0.6s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .slide-up { animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .progress-bar {
+    background: linear-gradient(90deg, #00D632, #00FF3D);
+    transition: width 1s ease-out;
+  }
+  
+  .glow { box-shadow: 0 0 40px rgba(0, 214, 50, 0.3); }
+  .glow-text { text-shadow: 0 0 20px rgba(0, 214, 50, 0.5); }
+  
+  .nav-link {
+    transition: color 0.2s;
+    position: relative;
+  }
+  .nav-link:hover { color: #00D632; }
+  .nav-link.active { color: #00D632; }
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #00D632;
+    border-radius: 1px;
+  }
+  
+  .deal-card {
+    background: linear-gradient(135deg, #1C1C1E 0%, #2C2C2E 100%);
+    border-radius: 16px;
+    transition: all 0.2s;
+  }
+  .deal-card:hover { transform: scale(1.02); }
+  
+  .flash-deal {
+    background: linear-gradient(135deg, #FF3B30 0%, #FF6B35 100%);
+    animation: flash 2s ease-in-out infinite;
+  }
+  @keyframes flash {
+    0%, 100% { box-shadow: 0 0 20px rgba(255, 59, 48, 0.4); }
+    50% { box-shadow: 0 0 40px rgba(255, 59, 48, 0.7); }
+  }
+  
+  .modal-overlay {
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+  }
+  
+  .wave { animation: wave 1.5s ease-in-out infinite; }
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+  
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #000; }
+  ::-webkit-scrollbar-thumb { background: #2C2C2E; border-radius: 3px; }
+  
+  .checkmark { animation: checkPop 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+  @keyframes checkPop {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  .zone-card {
+    background: #0A0A0A;
+    border: 1px solid #1C1C1E;
+    border-radius: 24px;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+  .zone-card:hover {
+    border-color: #00D632;
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(0, 214, 50, 0.15);
+  }
+  .zone-card:hover .zone-img svg { transform: scale(1.05); }
+  .zone-img svg { transition: transform 0.4s; }
+  
+  .gradient-text {
+    background: linear-gradient(135deg, #00D632 0%, #00FF88 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .stat-card {
+    background: linear-gradient(135deg, #1C1C1E 0%, #0A0A0A 100%);
+    border: 1px solid #2C2C2E;
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+  .stat-card:hover { border-color: #00D632; }
+  
+  .method-card {
+    background: #0A0A0A;
+    border: 1px solid #1C1C1E;
+    border-radius: 24px;
+    transition: all 0.3s;
+  }
+  .method-card:hover {
+    border-color: #00D632;
+    transform: translateY(-4px);
+  }
+  
+  .hero-bg {
+    background: radial-gradient(ellipse at top, rgba(0, 214, 50, 0.15) 0%, transparent 60%);
+  }
+  
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #2C2C2E, transparent);
+  }
+  
+  .floating { animation: floating 3s ease-in-out infinite; }
+  @keyframes floating {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .pulse-dot { animation: pulseDot 2s ease-in-out infinite; }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+  }
+  
+  .mobile-menu {
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  
+  .timeline-line {
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, #00D632, transparent);
+  }
+  
+  .phase-card {
+    background: #0A0A0A;
+    border: 1px solid #1C1C1E;
+    border-radius: 20px;
+    transition: all 0.3s;
+  }
+  .phase-card:hover {
+    border-color: #00D632;
+    transform: translateX(4px);
+  }
+  
+  .competitor-row {
+    transition: all 0.2s;
+  }
+  .competitor-row:hover {
+    background: rgba(0, 214, 50, 0.05);
+  }
+  
+  .vault-glow {
+    background: radial-gradient(ellipse at center, rgba(0, 214, 50, 0.2) 0%, transparent 70%);
+  }
+</style>
 </head>
 <body>
-    <h1>mybuyo-biometric-saas</h1>
-    <div class="info">
-        <strong>Repository:</strong> Constillation25/mybuyo-biometric-saas<br>
-        <strong>Status:</strong> Deployed via GitHub Pages
+
+<!-- Main Nav -->
+<nav class="sticky top-0 z-40 bg-black/80 backdrop-blur-xl border-b border-white/5">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <a href="#" class="flex items-center gap-2">
+        <div class="w-9 h-9 bg-cash-green rounded-xl flex items-center justify-center font-black text-black text-lg">M</div>
+        <span class="font-bold text-lg">MyBuy'O</span>
+      </a>
+      
+      <div class="hidden lg:flex items-center gap-8">
+        <a href="#home" class="nav-link active text-sm font-medium">Home</a>
+        <a href="#about" class="nav-link text-sm font-medium text-gray-400">About</a>
+        <a href="#pilot" class="nav-link text-sm font-medium text-gray-400">Pilot</a>
+        <a href="#promotions" class="nav-link text-sm font-medium text-gray-400">Promotions</a>
+        <div class="relative group">
+          <button class="nav-link text-sm font-medium text-gray-400 flex items-center gap-1">
+            BAAS SERVICES
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+            <div class="bg-[#1C1C1E] border border-white/10 rounded-xl p-2 w-56">
+              <a href="#biometric" class="block px-3 py-2 text-sm rounded-lg hover:bg-white/5">Biometric Solutions</a>
+              <a href="#api" class="block px-3 py-2 text-sm rounded-lg hover:bg-white/5">ID Verification API</a>
+              <a href="#vault" class="block px-3 py-2 text-sm rounded-lg hover:bg-white/5">TotalRecall™ Vault</a>
+              <a href="#" class="block px-3 py-2 text-sm rounded-lg hover:bg-white/5">Enterprise</a>
+            </div>
+          </div>
+        </div>
+        <a href="#demos" class="nav-link text-sm font-medium text-gray-400">Demos</a>
+      </div>
+      
+      <div class="hidden lg:flex items-center gap-3">
+        <button class="btn-outline px-4 py-2 text-sm">Sign In</button>
+        <button class="btn-primary px-4 py-2 text-sm">Get Started</button>
+      </div>
+      
+      <button onclick="toggleMobileMenu()" class="lg:hidden w-10 h-10 flex items-center justify-center">
+        <svg id="menuIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
     </div>
-    <footer style="margin-top: 40px; color: #586069;">
-        <p>© 2026 CyGeL White / Kre8tive Holdings</p>
-    </footer>
+  </div>
+  
+  <div id="mobileMenu" class="mobile-menu fixed top-16 right-0 bottom-0 w-72 bg-[#0A0A0A] border-l border-white/5 z-50 lg:hidden">
+    <div class="p-6 space-y-4">
+      <a href="#home" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium">Home</a>
+      <a href="#about" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">About</a>
+      <a href="#pilot" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">Pilot Proposal</a>
+      <a href="#promotions" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">Promotions</a>
+      <a href="#biometric" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">Biometric Solutions</a>
+      <a href="#vault" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">TotalRecall™ Vault</a>
+      <a href="#demos" onclick="toggleMobileMenu()" class="block py-2 text-lg font-medium text-gray-400">Demos</a>
+      <div class="pt-4 space-y-2">
+        <button class="btn-outline w-full py-3">Sign In</button>
+        <button class="btn-primary w-full py-3">Get Started</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<section id="home" class="hero-bg relative overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 py-20 md:py-32">
+    <div class="grid lg:grid-cols-2 gap-12 items-center">
+      <div class="fade-in">
+        <div class="inline-flex items-center gap-2 bg-cash-green/10 border border-cash-green/30 rounded-full px-4 py-1.5 mb-6">
+          <span class="w-2 h-2 bg-cash-green rounded-full pulse-dot"></span>
+          <span class="text-xs font-semibold cash-green">BY FACEPRINTPAY INC. · NC-BORN</span>
+        </div>
+        <h1 class="text-4xl md:text-6xl lg:text-7xl font-black leading-[1.05] mb-6">
+          Elevate your<br>
+          <span class="gradient-text">Purchasing</span><br>
+          EXPERIENCE
+        </h1>
+        <p class="text-lg md:text-xl text-gray-400 mb-8 max-w-xl">
+          The ultimate solution for a <span class="text-white font-semibold">cashless, cardless, touchless</span> & secure digital and retail shopping experience.
+        </p>
+        <div class="flex flex-wrap gap-3 mb-10">
+          <button class="btn-primary px-6 py-3.5 text-base">Create Free Account</button>
+          <button onclick="scrollToId('demos')" class="btn-outline px-6 py-3.5 text-base">Try Live Demo</button>
+        </div>
+        <div class="flex items-center gap-6 text-sm text-gray-500">
+          <div class="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>No credit card</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>Free forever</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            <span>SOC 2</span>
+          </div>
+        </div>
+      </div>
+      
+      <div class="relative hidden lg:block">
+        <div class="relative w-full aspect-square max-w-lg mx-auto floating">
+          <div class="absolute inset-0 bg-gradient-to-br from-cash-green/20 to-transparent rounded-full blur-3xl"></div>
+          <div class="absolute inset-8 rounded-full border-2 border-cash-green/30 scanner-ring"></div>
+          <div class="absolute inset-16 rounded-full border border-cash-green/20"></div>
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-64 h-64 rounded-full bg-gradient-to-br from-cash-green/30 to-transparent flex items-center justify-center relative overflow-hidden">
+              <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.2" class="opacity-80">
+                <circle cx="12" cy="8" r="4"/>
+                <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+              </svg>
+              <div class="absolute left-0 right-0 h-0.5 bg-cash-green scan-line"></div>
+            </div>
+          </div>
+          <div class="absolute top-8 left-8 w-12 h-12 border-t-4 border-l-4 border-cash-green rounded-tl-3xl"></div>
+          <div class="absolute top-8 right-8 w-12 h-12 border-t-4 border-r-4 border-cash-green rounded-tr-3xl"></div>
+          <div class="absolute bottom-8 left-8 w-12 h-12 border-b-4 border-l-4 border-cash-green rounded-bl-3xl"></div>
+          <div class="absolute bottom-8 right-8 w-12 h-12 border-b-4 border-r-4 border-cash-green rounded-br-3xl"></div>
+          
+          <div class="absolute top-4 -left-4 bg-[#1C1C1E] border border-white/10 rounded-2xl px-4 py-3 shadow-xl">
+            <div class="text-xs text-gray-500">Match Rate</div>
+            <div class="text-xl font-bold cash-green">99.7%</div>
+          </div>
+          <div class="absolute bottom-4 -right-4 bg-[#1C1C1E] border border-white/10 rounded-2xl px-4 py-3 shadow-xl">
+            <div class="text-xs text-gray-500">Auth Time</div>
+            <div class="text-xl font-bold">&lt;1s</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET STATS BAR -->
+<section class="max-w-7xl mx-auto px-4 py-12">
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="stat-card p-5 text-center">
+      <div class="text-3xl md:text-4xl font-black gradient-text">$5.8T</div>
+      <div class="text-xs text-gray-500 mt-2">Global Biometric Payments by 2026</div>
+      <div class="text-[10px] text-gray-600 mt-1">Goode Intelligence</div>
+    </div>
+    <div class="stat-card p-5 text-center">
+      <div class="text-3xl md:text-4xl font-black gradient-text">47%</div>
+      <div class="text-xs text-gray-500 mt-2">Consumers Ready for Biometric Pay</div>
+      <div class="text-[10px] text-gray-600 mt-1">Javelin Strategy 2024</div>
+    </div>
+    <div class="stat-card p-5 text-center">
+      <div class="text-3xl md:text-4xl font-black gradient-text">1,100+</div>
+      <div class="text-xs text-gray-500 mt-2">Food Lion Stores (10 SE States)</div>
+      <div class="text-[10px] text-gray-600 mt-1">Ahold Delhaize USA</div>
+    </div>
+    <div class="stat-card p-5 text-center">
+      <div class="text-3xl md:text-4xl font-black gradient-text">&lt;1s</div>
+      <div class="text-xs text-gray-500 mt-2">Avg. Biometric Transaction</div>
+      <div class="text-[10px] text-gray-600 mt-1">J.P. Morgan / PopID</div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 ZONE IMAGES -->
+<section class="max-w-7xl mx-auto px-4 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl md:text-4xl font-bold mb-3">Get The Details</h2>
+    <p class="text-gray-500">Tap or click on zone images below to explore each biometric method</p>
+  </div>
+  
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+    <div onclick="scrollToId('faceit')" class="zone-card group">
+      <div class="zone-img aspect-square bg-gradient-to-br from-cash-green/10 to-black flex items-center justify-center p-6">
+        <svg viewBox="0 0 200 200" class="w-full h-full">
+          <defs>
+            <radialGradient id="faceGlow" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00D632" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00D632" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="80" fill="url(#faceGlow)"/>
+          <g stroke="#00D632" stroke-width="1" fill="none" opacity="0.9">
+            <ellipse cx="100" cy="95" rx="45" ry="55"/>
+            <circle cx="82" cy="85" r="4"/>
+            <circle cx="118" cy="85" r="4"/>
+            <path d="M 85 115 Q 100 125 115 115"/>
+            <line x1="100" y1="95" x2="100" y2="110"/>
+            <circle cx="100" cy="55" r="2" fill="#00D632"/>
+            <circle cx="70" cy="70" r="2" fill="#00D632"/>
+            <circle cx="130" cy="70" r="2" fill="#00D632"/>
+            <circle cx="60" cy="100" r="2" fill="#00D632"/>
+            <circle cx="140" cy="100" r="2" fill="#00D632"/>
+            <circle cx="75" cy="130" r="2" fill="#00D632"/>
+            <circle cx="125" cy="130" r="2" fill="#00D632"/>
+            <circle cx="100" cy="140" r="2" fill="#00D632"/>
+            <line x1="100" y1="55" x2="70" y2="70" opacity="0.4"/>
+            <line x1="100" y1="55" x2="130" y2="70" opacity="0.4"/>
+            <line x1="70" y1="70" x2="60" y2="100" opacity="0.4"/>
+            <line x1="130" y1="70" x2="140" y2="100" opacity="0.4"/>
+            <line x1="60" y1="100" x2="75" y2="130" opacity="0.4"/>
+            <line x1="140" y1="100" x2="125" y2="130" opacity="0.4"/>
+            <line x1="75" y1="130" x2="100" y2="140" opacity="0.4"/>
+            <line x1="125" y1="130" x2="100" y2="140" opacity="0.4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="p-5">
+        <div class="text-[10px] cash-green font-bold mb-1">#FACEIT</div>
+        <div class="font-bold text-base mb-1">Facial Recognition</div>
+        <div class="text-xs text-gray-500">Spatial geometry mapping</div>
+      </div>
+    </div>
+    
+    <div onclick="scrollToId('printpay')" class="zone-card group">
+      <div class="zone-img aspect-square bg-gradient-to-br from-cash-green/10 to-black flex items-center justify-center p-6">
+        <svg viewBox="0 0 200 200" class="w-full h-full">
+          <defs>
+            <radialGradient id="fpGlow" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00D632" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00D632" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="80" fill="url(#fpGlow)"/>
+          <g stroke="#00D632" stroke-width="1.5" fill="none" opacity="0.9">
+            <path d="M 100 40 Q 60 50 55 100 Q 55 140 80 160"/>
+            <path d="M 100 50 Q 70 60 65 100 Q 65 135 85 150"/>
+            <path d="M 100 60 Q 80 70 75 100 Q 75 125 90 140"/>
+            <path d="M 100 70 Q 88 80 85 100 Q 85 115 95 125"/>
+            <path d="M 100 80 Q 95 90 95 100 Q 95 110 100 115"/>
+            <path d="M 100 40 Q 140 50 145 100 Q 145 140 120 160"/>
+            <path d="M 100 50 Q 130 60 135 100 Q 135 135 115 150"/>
+            <path d="M 100 60 Q 120 70 125 100 Q 125 125 110 140"/>
+            <path d="M 100 70 Q 112 80 115 100 Q 115 115 105 125"/>
+            <path d="M 100 80 Q 105 90 105 100 Q 105 110 100 115"/>
+          </g>
+        </svg>
+      </div>
+      <div class="p-5">
+        <div class="text-[10px] cash-green font-bold mb-1">#PRINTPAY</div>
+        <div class="font-bold text-base mb-1">Fingerprint + Palm</div>
+        <div class="text-xs text-gray-500">Ridge & valley scan</div>
+      </div>
+    </div>
+    
+    <div onclick="scrollToId('blinklink')" class="zone-card group">
+      <div class="zone-img aspect-square bg-gradient-to-br from-cash-green/10 to-black flex items-center justify-center p-6">
+        <svg viewBox="0 0 200 200" class="w-full h-full">
+          <defs>
+            <radialGradient id="irisGlow" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00D632" stop-opacity="0.4"/>
+              <stop offset="100%" stop-color="#00D632" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="80" fill="url(#irisGlow)"/>
+          <g stroke="#00D632" fill="none" opacity="0.9">
+            <circle cx="100" cy="100" r="55" stroke-width="1.5"/>
+            <circle cx="100" cy="100" r="45" stroke-width="1"/>
+            <circle cx="100" cy="100" r="35" stroke-width="1"/>
+            <circle cx="100" cy="100" r="25" stroke-width="1"/>
+            <circle cx="100" cy="100" r="15" stroke-width="1.5"/>
+            <circle cx="100" cy="100" r="8" fill="#00D632" opacity="0.8"/>
+            <g stroke-width="0.8" opacity="0.6">
+              <line x1="100" y1="45" x2="100" y2="60"/>
+              <line x1="100" y1="140" x2="100" y2="155"/>
+              <line x1="45" y1="100" x2="60" y2="100"/>
+              <line x1="140" y1="100" x2="155" y2="100"/>
+              <line x1="61" y1="61" x2="72" y2="72"/>
+              <line x1="128" y1="128" x2="139" y2="139"/>
+              <line x1="139" y1="61" x2="128" y2="72"/>
+              <line x1="72" y1="128" x2="61" y2="139"/>
+            </g>
+          </g>
+        </svg>
+      </div>
+      <div class="p-5">
+        <div class="text-[10px] cash-green font-bold mb-1">#BLINKLINK</div>
+        <div class="font-bold text-base mb-1">Iris Scan</div>
+        <div class="text-xs text-gray-500">Contactless eye auth</div>
+      </div>
+    </div>
+    
+    <div onclick="scrollToId('speakit')" class="zone-card group">
+      <div class="zone-img aspect-square bg-gradient-to-br from-cash-green/10 to-black flex items-center justify-center p-6">
+        <svg viewBox="0 0 200 200" class="w-full h-full">
+          <defs>
+            <radialGradient id="voiceGlow" cx="50%" cy="50%">
+              <stop offset="0%" stop-color="#00D632" stop-opacity="0.3"/>
+              <stop offset="100%" stop-color="#00D632" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <circle cx="100" cy="100" r="80" fill="url(#voiceGlow)"/>
+          <g stroke="#00D632" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.9">
+            <line x1="55" y1="85" x2="55" y2="115"/>
+            <line x1="70" y1="70" x2="70" y2="130"/>
+            <line x1="85" y1="55" x2="85" y2="145"/>
+            <line x1="100" y1="45" x2="100" y2="155"/>
+            <line x1="115" y1="60" x2="115" y2="140"/>
+            <line x1="130" y1="75" x2="130" y2="125"/>
+            <line x1="145" y1="85" x2="145" y2="115"/>
+          </g>
+        </svg>
+      </div>
+      <div class="p-5">
+        <div class="text-[10px] cash-green font-bold mb-1">#SPEAKIT</div>
+        <div class="font-bold text-base mb-1">Voice Recognition</div>
+        <div class="text-xs text-gray-500">Pass-phrase vocal auth</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONSUMERS LOVE SECTION -->
+<section class="max-w-7xl mx-auto px-4 py-16">
+  <div class="card p-8 md:p-12 text-center">
+    <div class="text-xs cash-green font-bold mb-3">★ TRUSTED BY THOUSANDS</div>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Consumers Love Using MyBuy'O</h2>
+    <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+      For self checkout point-of-sale systems in retail stores.
+    </p>
+    <div class="grid grid-cols-3 gap-6 mt-10 max-w-3xl mx-auto">
+      <div>
+        <div class="text-4xl md:text-5xl font-black gradient-text">&lt;1s</div>
+        <div class="text-xs text-gray-500 mt-2">Avg. Auth Time</div>
+      </div>
+      <div>
+        <div class="text-4xl md:text-5xl font-black gradient-text">99.7%</div>
+        <div class="text-xs text-gray-500 mt-2">Match Accuracy</div>
+      </div>
+      <div>
+        <div class="text-4xl md:text-5xl font-black gradient-text">24/7</div>
+        <div class="text-xs text-gray-500 mt-2">Secure Access</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE INVENTOR STORY -->
+<section id="about" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="text-xs cash-green font-bold mb-3">A HOMETOWN INVENTION</div>
+      <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+        Born in the aisles.<br><span class="gradient-text">Built by a Food Lion associate.</span>
+      </h2>
+      <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+        MyBuy'O wasn't pitched from a Silicon Valley boardroom — it was developed by <span class="text-white font-semibold">Cygel White</span>, a Food Lion stocking clerk who saw the checkout friction firsthand and built the solution.
+      </p>
+      <p class="text-gray-500 mb-8 leading-relaxed">
+        This authentic origin story isn't just background — it's a strategic advantage. It's organic, in-house innovation that positions Food Lion as the first major U.S. grocery chain to implement frictionless face-and-fingerprint checkout at self-service kiosks.
+      </p>
+      <div class="flex gap-3">
+        <button class="btn-primary px-6 py-3">Meet the Inventor</button>
+        <button class="btn-outline px-6 py-3">Read the Story</button>
+      </div>
+    </div>
+    <div class="relative">
+      <div class="card p-8 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-64 h-64 bg-cash-green/10 rounded-full blur-3xl"></div>
+        <div class="relative">
+          <div class="flex items-center gap-4 mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-cash-green to-emerald-600 rounded-2xl flex items-center justify-center text-3xl font-black text-black">CW</div>
+            <div>
+              <div class="font-bold text-xl">Cygel White</div>
+              <div class="text-sm text-gray-500">Inventor · FacePrintPay Inc.</div>
+              <div class="text-xs cash-green mt-1">Food Lion Associate → Founder</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-[#0A0A0A] rounded-xl p-4">
+              <div class="text-2xl mb-1">🛒</div>
+              <div class="text-xs text-gray-500">Started as</div>
+              <div class="font-semibold text-sm">Stocking Clerk</div>
+            </div>
+            <div class="bg-[#0A0A0A] rounded-xl p-4">
+              <div class="text-2xl mb-1">💡</div>
+              <div class="text-xs text-gray-500">Now leads</div>
+              <div class="font-semibold text-sm">FacePrintPay Inc.</div>
+            </div>
+            <div class="bg-[#0A0A0A] rounded-xl p-4">
+              <div class="text-2xl mb-1">🏪</div>
+              <div class="text-xs text-gray-500">Target</div>
+              <div class="font-semibold text-sm">1,100+ Stores</div>
+            </div>
+            <div class="bg-[#0A0A0A] rounded-xl p-4">
+              <div class="text-2xl mb-1">🌎</div>
+              <div class="text-xs text-gray-500">HQ</div>
+              <div class="font-semibold text-sm">North Carolina</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- WHY NOW -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">THE WINDOW IS OPEN</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">Why <span class="gradient-text">Now?</span></h2>
+    <p class="text-gray-500 max-w-2xl mx-auto">Competitors like J.P. Morgan, PopID, and Amazon One are aggressively investing in grocery. There's an 18-month window to establish leadership before biometric payments become standard expectation.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-3 gap-4">
+    <div class="stat-card p-6">
+      <div class="text-4xl mb-3">⏱️</div>
+      <div class="font-bold text-lg mb-2">18-Month Window</div>
+      <div class="text-sm text-gray-500">First-mover advantage before biometric becomes table stakes.</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl mb-3">🏆</div>
+      <div class="font-bold text-lg mb-2">First U.S. Grocery Chain</div>
+      <div class="text-sm text-gray-500">Position as the pioneer of frictionless face-and-fingerprint checkout.</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl mb-3">📈</div>
+      <div class="font-bold text-lg mb-2">Incalculable PR Value</div>
+      <div class="text-sm text-gray-500">Media coverage of a hometown inventor revolutionizing retail.</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- PILOT PROPOSAL -->
+<section id="pilot" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">PILOT PROPOSAL · FOOD LION</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">The 3-Phase <span class="gradient-text">Rollout Plan</span></h2>
+    <p class="text-gray-500 max-w-2xl mx-auto">A structured, low-risk deployment designed to prove value, scale regionally, and unlock chain-wide transformation.</p>
+  </div>
+  
+  <div class="space-y-4">
+    <!-- Phase 1 -->
+    <div class="phase-card p-6 md:p-8">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-cash-green rounded-2xl flex items-center justify-center text-black font-black text-xl flex-shrink-0">01</div>
+        <div class="flex-1">
+          <div class="flex flex-wrap items-center gap-3 mb-2">
+            <h3 class="text-xl md:text-2xl font-bold">Single-Store Pilot</h3>
+            <span class="text-xs bg-cash-green/10 border border-cash-green/30 cash-green rounded-full px-3 py-1 font-semibold">MONTHS 1–3</span>
+          </div>
+          <p class="text-gray-400 mb-4">Deploy on 2–4 self-checkout kiosks at one Food Lion location in North Carolina. Focus on enrollment rate, transaction velocity, customer satisfaction (NPS), and error rate.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Enrollment Rate</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Transaction Velocity</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">NPS Score</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Error Rate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Phase 2 -->
+    <div class="phase-card p-6 md:p-8">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-cash-green rounded-2xl flex items-center justify-center text-black font-black text-xl flex-shrink-0">02</div>
+        <div class="flex-1">
+          <div class="flex flex-wrap items-center gap-3 mb-2">
+            <h3 class="text-xl md:text-2xl font-bold">Regional Expansion</h3>
+            <span class="text-xs bg-cash-green/10 border border-cash-green/30 cash-green rounded-full px-3 py-1 font-semibold">MONTHS 4–9</span>
+          </div>
+          <p class="text-gray-400 mb-4">Expand to 5–10 NC/SC locations, integrating MyBuy'O with the Food Lion MVP loyalty program. Measure checkout time reduction, repeat biometric usage, and shrink delta.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">5–10 Stores</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">MVP Loyalty Integration</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Shrink Reduction</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Phase 3 -->
+    <div class="phase-card p-6 md:p-8">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 bg-cash-green rounded-2xl flex items-center justify-center text-black font-black text-xl flex-shrink-0">03</div>
+        <div class="flex-1">
+          <div class="flex flex-wrap items-center gap-3 mb-2">
+            <h3 class="text-xl md:text-2xl font-bold">Chain-Wide Rollout + Acquisition</h3>
+            <span class="text-xs bg-cash-green/10 border border-cash-green/30 cash-green rounded-full px-3 py-1 font-semibold">MONTHS 10–18</span>
+          </div>
+          <p class="text-gray-400 mb-4">Full deployment across Food Lion's 1,100+ stores. Present performance data to Ahold Delhaize USA executive team. Initiate discussions for licensing, acquisition, or exclusive partnership.</p>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">1,100+ Stores</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Ahold Delhaize Review</span>
+            <span class="text-xs bg-white/5 rounded-full px-3 py-1">Licensing / Acquisition</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- ROI PROJECTIONS -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">BUSINESS CASE</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">ROI <span class="gradient-text">Projections</span></h2>
+    <p class="text-gray-500 max-w-2xl mx-auto">Tangible, measurable returns from day one of pilot deployment.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">~40%</div>
+      <div class="font-bold mb-1">Faster Checkout</div>
+      <div class="text-xs text-gray-500">Average checkout time reduction</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">15–25%</div>
+      <div class="font-bold mb-1">Less Abandonment</div>
+      <div class="text-xs text-gray-500">Self-checkout abandonment reduction</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">~100%</div>
+      <div class="font-bold mb-1">Fraud Elimination</div>
+      <div class="text-xs text-gray-500">Card/payment fraud near elimination</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">1:1</div>
+      <div class="font-bold mb-1">Biometric = Identity</div>
+      <div class="text-xs text-gray-500">Customer loyalty tie-in via MVP</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">∞</div>
+      <div class="font-bold mb-1">PR / Media Value</div>
+      <div class="text-xs text-gray-500">First-mover advantage incalculable</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-4xl font-black gradient-text mb-2">12–18 mo</div>
+      <div class="font-bold mb-1">Competitive Lead</div>
+      <div class="text-xs text-gray-500">Differentiation window ahead</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- COMPETITIVE LANDSCAPE -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">COMPETITIVE LANDSCAPE</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">Why <span class="gradient-text">MyBuy'O</span> Wins</h2>
+    <p class="text-gray-500 max-w-2xl mx-auto">Purpose-built for grocery. Born in the Southeast. Forensic-grade audit trail.</p>
+  </div>
+  
+  <div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-white/10 text-left">
+            <th class="p-4 font-semibold text-gray-400">Solution</th>
+            <th class="p-4 font-semibold text-gray-400">Grocery</th>
+            <th class="p-4 font-semibold text-gray-400">NC / SE</th>
+            <th class="p-4 font-semibold text-gray-400">Self-Checkout</th>
+            <th class="p-4 font-semibold text-gray-400">Forensic Log</th>
+            <th class="p-4 font-semibold text-gray-400">Acquisition</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="competitor-row border-b border-white/5 bg-cash-green/5">
+            <td class="p-4">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-cash-green rounded-lg flex items-center justify-center font-black text-black text-xs">M</div>
+                <div>
+                  <div class="font-bold cash-green">MyBuy'O™</div>
+                  <div class="text-[10px] text-gray-500">FacePrintPay</div>
+                </div>
+              </div>
+            </td>
+            <td class="p-4 cash-green font-bold">✓</td>
+            <td class="p-4 cash-green font-bold">✓ NC-BORN</td>
+            <td class="p-4 cash-green font-bold">✓</td>
+            <td class="p-4 cash-green font-bold">✓ TotalRecall™</td>
+            <td class="p-4 cash-green font-bold">✓ Available</td>
+          </tr>
+          <tr class="competitor-row border-b border-white/5">
+            <td class="p-4 font-semibold">Amazon One</td>
+            <td class="p-4 text-gray-500">~ Whole Foods</td>
+            <td class="p-4 text-gray-500">✗</td>
+            <td class="p-4 text-gray-500">~ Palm only</td>
+            <td class="p-4 text-gray-500">✗</td>
+            <td class="p-4 text-gray-500">✗ Proprietary</td>
+          </tr>
+          <tr class="competitor-row border-b border-white/5">
+            <td class="p-4 font-semibold">PopID / JP Morgan</td>
+            <td class="p-4 text-gray-500">~ QSR</td>
+            <td class="p-4 text-gray-500">✗ Generic</td>
+            <td class="p-4 text-gray-500">~ Retrofit</td>
+            <td class="p-4 text-gray-500">~ Limited</td>
+            <td class="p-4 text-gray-500">✗ JV only</td>
+          </tr>
+          <tr class="competitor-row">
+            <td class="p-4 font-semibold">CLEAR</td>
+            <td class="p-4 text-gray-500">✗ Travel</td>
+            <td class="p-4 text-gray-500">✗</td>
+            <td class="p-4 text-gray-500">✗</td>
+            <td class="p-4 text-gray-500">~ Basic</td>
+            <td class="p-4 text-gray-500">✗</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- TOTALRECALL VAULT -->
+<section id="vault" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="grid lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="text-xs cash-green font-bold mb-3">TOTALRECALL™ VAULT</div>
+      <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+        SHA256-anchored <span class="gradient-text">forensic logging</span> for every transaction.
+      </h2>
+      <p class="text-gray-400 text-lg mb-6 leading-relaxed">
+        An immutable audit trail built for compliance with Ahold Delhaize security standards. Every biometric scan, every authorization, every payment — cryptographically anchored and forever verifiable.
+      </p>
+      <div class="space-y-3 mb-8">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Zero Raw Biometric Storage</div>
+            <div class="text-sm text-gray-500">Encrypted mathematical representations only</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Consent-Based Enrollment</div>
+            <div class="text-sm text-gray-500">BIPA, state privacy laws, PCI DSS compliant</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Immutable Audit Trail</div>
+            <div class="text-sm text-gray-500">Every transaction verifiable, forever</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-primary px-6 py-3">Explore the Vault</button>
+    </div>
+    <div class="relative">
+      <div class="card p-8 relative overflow-hidden">
+        <div class="absolute inset-0 vault-glow"></div>
+        <div class="relative">
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-2 h-2 bg-cash-green rounded-full pulse-dot"></div>
+            <div class="text-xs cash-green font-bold">LIVE · FORENSIC LOG</div>
+          </div>
+          <div class="space-y-2 font-mono text-xs">
+            <div class="bg-black/60 rounded-lg p-3 border-l-2 border-cash-green">
+              <div class="flex justify-between text-gray-500 mb-1">
+                <span>TX-9847</span>
+                <span>12:34:56</span>
+              </div>
+              <div class="cash-green">BIOMETRIC_AUTH: ✓ 99.7% match</div>
+              <div class="text-gray-400 text-[10px] mt-1">SHA256: 4a7b3c...e91f</div>
+            </div>
+            <div class="bg-black/60 rounded-lg p-3 border-l-2 border-cash-green">
+              <div class="flex justify-between text-gray-500 mb-1">
+                <span>TX-9846</span>
+                <span>12:34:12</span>
+              </div>
+              <div class="cash-green">PAYMENT_PROC: ✓ $42.89</div>
+              <div class="text-gray-400 text-[10px] mt-1">SHA256: 8f2d1a...b73c</div>
+            </div>
+            <div class="bg-black/60 rounded-lg p-3 border-l-2 border-cash-green">
+              <div class="flex justify-between text-gray-500 mb-1">
+                <span>TX-9845</span>
+                <span>12:33:48</span>
+              </div>
+              <div class="cash-green">RECEIPT_GEN: ✓ Delivered</div>
+              <div class="text-gray-400 text-[10px] mt-1">SHA256: c3e5f9...a2d8</div>
+            </div>
+            <div class="bg-black/60 rounded-lg p-3 border-l-2 border-red-500">
+              <div class="flex justify-between text-gray-500 mb-1">
+                <span>TX-9844</span>
+                <span>12:32:01</span>
+              </div>
+              <div class="text-red-400">FRAUD_ALERT: ⚠ Mismatch captured</div>
+              <div class="text-gray-400 text-[10px] mt-1">SHA256: 9b1c4e...f6a2</div>
+            </div>
+          </div>
+          <div class="mt-4 flex items-center justify-between text-[10px] text-gray-500">
+            <span>Terminal #3 · Food Lion NC</span>
+            <span class="cash-green">● Anchored</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- BIOMETRIC METHODS -->
+<section id="biometric" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">READY TO GET STARTED?</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">Choose your biometric method</h2>
+    <p class="text-gray-500">Follow the steps below. For more details, read the Quick Start Guide.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 gap-6">
+    <div id="faceit" class="method-card p-8">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 bg-cash-green/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.8">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-xs cash-green font-bold mb-1">#FACEIT</div>
+          <h3 class="text-2xl font-bold">Facial Recognition</h3>
+        </div>
+      </div>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        By recording the spatial geometry of the face — works by using a photo ID of the customer, previously stored in the system, and scanning their face for a match.
+      </p>
+      <button class="btn-primary px-6 py-3">Set Up Now</button>
+    </div>
+    
+    <div id="printpay" class="method-card p-8">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 bg-cash-green/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.8">
+            <path d="M12 2C8 2 6 6 6 10c0 4 2 10 6 10s6-6 6-10c0-4-2-8-6-8z"/>
+            <path d="M12 6c-2 0-3 2-3 4s1 6 3 6 3-4 3-6-1-4-3-4z"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-xs cash-green font-bold mb-1">#PRINTPAY</div>
+          <h3 class="text-2xl font-bold">Fingerprint + Palm</h3>
+        </div>
+      </div>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        Multi-modal options for customer choice. Both fingerprint and palm authentication linked to a secure vault. Accommodates users who prefer not to use facial recognition.
+      </p>
+      <button class="btn-primary px-6 py-3">Scan Now</button>
+    </div>
+    
+    <div id="blinklink" class="method-card p-8">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 bg-cash-green/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.8">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-xs cash-green font-bold mb-1">#BLINKLINK</div>
+          <h3 class="text-2xl font-bold">PayEye Iris</h3>
+        </div>
+      </div>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        PayEye scans your iris to make contactless payments. The unique patterns in your iris provide one of the most accurate biometric identifiers available.
+      </p>
+      <button class="btn-primary px-6 py-3">Set Up Now</button>
+    </div>
+    
+    <div id="speakit" class="method-card p-8">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-14 h-14 bg-cash-green/10 rounded-2xl flex items-center justify-center flex-shrink-0">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.8">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+          </svg>
+        </div>
+        <div>
+          <div class="text-xs cash-green font-bold mb-1">#SPEAKIT</div>
+          <h3 class="text-2xl font-bold">Voice Recognition</h3>
+        </div>
+      </div>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        Using vocal characteristics to identify individuals using a pass-phrase. Your voice is as unique as your fingerprint — secure and convenient.
+      </p>
+      <button class="btn-primary px-6 py-3">Verify Now</button>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- API FEATURES -->
+<section id="api" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="grid lg:grid-cols-2 gap-12">
+    <div>
+      <div class="text-xs cash-green font-bold mb-3">ID VERIFICATION API</div>
+      <h2 class="text-3xl md:text-4xl font-bold mb-6">Real-time user identity verification for every business use case</h2>
+      <p class="text-gray-400 mb-6 leading-relaxed">
+        The ID Verification API enables Relying Party (RP) to perform real-time user identity verification for Financial Services, Healthcare, Travel, Education, and similar business. The solution is offered via APIs to assure the user is who they claim by providing a set of real-time verified attributes.
+      </p>
+      
+      <div class="space-y-3">
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Mobile Verification</div>
+            <div class="text-sm text-gray-500">Assure possession of mobile phone number</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Mobile Trust Score</div>
+            <div class="text-sm text-gray-500">Reputation score for user's phone number</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Verified Form Fill</div>
+            <div class="text-sm text-gray-500">Retrieve user's PII data securely</div>
+          </div>
+        </div>
+        <div class="flex items-start gap-3">
+          <div class="w-6 h-6 bg-cash-green/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+          </div>
+          <div>
+            <div class="font-semibold">Document Verification</div>
+            <div class="text-sm text-gray-500">Verify authenticity of user documents</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <div class="card p-6 mb-4">
+        <div class="text-xs cash-green font-bold mb-3">VERIFICATION PROCESS</div>
+        <div class="space-y-4">
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-cash-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">1</div>
+            <div>
+              <div class="font-semibold text-sm">Phone Verification</div>
+              <div class="text-xs text-gray-500">Instant phone verification or SMS OTP</div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-cash-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">2</div>
+            <div>
+              <div class="font-semibold text-sm">Photo ID Verification</div>
+              <div class="text-xs text-gray-500">Government-issued ID scanned & validated</div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-cash-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">3</div>
+            <div>
+              <div class="font-semibold text-sm">Facial Biometric</div>
+              <div class="text-xs text-gray-500">Live selfie with Liveness Detection</div>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 bg-cash-green rounded-full flex items-center justify-center text-black font-bold text-sm flex-shrink-0">4</div>
+            <div>
+              <div class="font-semibold text-sm">Additional Data</div>
+              <div class="text-xs text-gray-500">Any other data verified by IVP</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card p-6">
+        <div class="text-xs cash-green font-bold mb-3">QUICK START</div>
+        <ol class="space-y-2 text-sm text-gray-400">
+          <li>1. Create a project & add the API</li>
+          <li>2. Request Sandbox access</li>
+          <li>3. Test authentication & connectivity</li>
+          <li>4. Perform end-to-end integration</li>
+          <li>5. Move to Production</li>
+        </ol>
+        <button class="btn-primary w-full py-3 mt-4">Contact FacePrintPay</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- FACEPRINTPAY ECOSYSTEM -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">THE FACEPRINTPAY ECOSYSTEM</div>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">More platforms by <span class="gradient-text">Cygel White</span></h2>
+    <p class="text-gray-500">A portfolio of innovative solutions across retail, media, finance, and infrastructure.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="method-card p-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-cash-green to-emerald-600 rounded-xl flex items-center justify-center font-black text-black mb-4">M</div>
+      <div class="font-bold text-lg mb-1">MyBuy'O™</div>
+      <div class="text-xs text-gray-500 mb-3">Biometric Payment Gateway</div>
+      <div class="text-xs cash-green font-semibold">★ Flagship</div>
+    </div>
+    <div class="method-card p-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center font-black text-white mb-4">C25</div>
+      <div class="font-bold text-lg mb-1">Constellation25</div>
+      <div class="text-xs text-gray-500 mb-3">Next-gen platform</div>
+      <div class="text-xs text-gray-500">Coming soon</div>
+    </div>
+    <div class="method-card p-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-500 rounded-xl flex items-center justify-center font-black text-white mb-4">VC</div>
+      <div class="font-bold text-lg mb-1">VideoCourts™</div>
+      <div class="text-xs text-gray-500 mb-3">Digital media platform</div>
+      <div class="text-xs text-gray-500">In development</div>
+    </div>
+    <div class="method-card p-6">
+      <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-xl flex items-center justify-center font-black text-white mb-4">P</div>
+      <div class="font-bold text-lg mb-1">PeNNi™</div>
+      <div class="text-xs text-gray-500 mb-3">Fintech solution</div>
+      <div class="text-xs text-gray-500">In development</div>
+    </div>
+  </div>
+  
+  <div class="mt-4">
+    <div class="method-card p-6 flex items-center gap-4">
+      <div class="w-12 h-12 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center font-black text-white flex-shrink-0">SG</div>
+      <div class="flex-1">
+        <div class="font-bold text-lg">SovereignGTP</div>
+        <div class="text-xs text-gray-500">Infrastructure & governance platform</div>
+      </div>
+      <div class="text-xs text-gray-500 hidden md:block">In development</div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- PILOT INVESTMENT -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">LOW-RISK INVESTMENT</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">Pilot Investment <span class="gradient-text">Structure</span></h2>
+    <p class="text-gray-500 max-w-2xl mx-auto">Minimal commitment. Maximum validation. FacePrintPay handles integration engineering.</p>
+  </div>
+  
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="stat-card p-6">
+      <div class="text-3xl mb-3">💰</div>
+      <div class="font-bold mb-1">Negotiable Hardware</div>
+      <div class="text-xs text-gray-500">Flexible cost structure</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-3xl mb-3">📊</div>
+      <div class="font-bold mb-1">Pilot Pricing</div>
+      <div class="text-xs text-gray-500">Software licensing scaled to pilot</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-3xl mb-3">🎓</div>
+      <div class="font-bold mb-1">2-Hour Training</div>
+      <div class="text-xs text-gray-500">Minimal staff disruption</div>
+    </div>
+    <div class="stat-card p-6">
+      <div class="text-3xl mb-3">🛡️</div>
+      <div class="font-bold mb-1">30-Day Exit</div>
+      <div class="text-xs text-gray-500">Termination right, no risk</div>
+    </div>
+  </div>
+  
+  <div class="mt-8 text-center">
+    <button class="btn-primary px-8 py-4 text-lg">Download Letter of Intent (LOI)</button>
+  </div>
+</div>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- HASSLE FREE PAYMENTS -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="card p-10 md:p-16 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-cash-green/10 rounded-full blur-3xl"></div>
+    <div class="relative grid lg:grid-cols-2 gap-10 items-center">
+      <div>
+        <div class="text-xs cash-green font-bold mb-3">HASSLE-FREE PAYMENTS</div>
+        <h2 class="text-3xl md:text-5xl font-bold mb-6 leading-tight">
+          Enjoy Hassle Free Payments<br>Using <span class="gradient-text">Your MyBuy'O</span>
+        </h2>
+        <p class="text-gray-400 text-lg mb-8">
+          MyBuy'O Biometric Authentication gives you the highest level of digital security.
+        </p>
+        <button class="btn-primary px-8 py-4 text-lg mb-8">Download Now</button>
+        
+        <div class="grid grid-cols-2 gap-4 mt-8">
+          <div>
+            <div class="text-3xl mb-2">⚡</div>
+            <div class="font-bold mb-1">Lightning Fast</div>
+            <div class="text-xs text-gray-500">Quick, safe and hygienic. Just look at the terminal and it's paid.</div>
+          </div>
+          <div>
+            <div class="text-3xl mb-2">🎯</div>
+            <div class="font-bold mb-1">Intuitive Operation</div>
+            <div class="text-xs text-gray-500">Innovative payment gateway — safer, more convenient, faster with just a glance.</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="flex flex-col items-center gap-4">
+        <div class="text-center mb-4">
+          <div class="text-xs text-gray-500 mb-2">DOWNLOAD ON ANY DEVICE</div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+          <button class="bg-white text-black rounded-2xl p-4 flex items-center gap-3 hover:scale-105 transition">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+            <div class="text-left">
+              <div class="text-[10px]">Download on the</div>
+              <div class="font-bold text-sm">App Store</div>
+            </div>
+          </button>
+          <button class="bg-white text-black rounded-2xl p-4 flex items-center gap-3 hover:scale-105 transition">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M3 20.5v-17c0-.83.52-1.28 1-1.5l10 10-10 10c-.48-.22-1-.67-1-1.5z"/></svg>
+            <div class="text-left">
+              <div class="text-[10px]">GET IT ON</div>
+              <div class="font-bold text-sm">Google Play</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- DEMOS SECTION -->
+<section id="demos" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">LIVE DEMO</div>
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">Experience the <span class="gradient-text">Flow</span></h2>
+    <p class="text-gray-500">Interactive demo of the MyBuy'O payment experience</p>
+  </div>
+  
+  <div class="max-w-md mx-auto">
+    <div class="bg-[#0A0A0A] rounded-[40px] border border-white/10 p-3 shadow-2xl">
+      <div class="bg-black rounded-[32px] overflow-hidden min-h-[640px] flex flex-col relative">
+        
+        <div class="px-6 pt-6 pb-4 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-cash-green rounded-xl flex items-center justify-center font-black text-black text-lg">M</div>
+            <div>
+              <div class="font-bold text-lg leading-tight">MyBuyO</div>
+              <div class="text-xs text-gray-500 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 bg-cash-green rounded-full"></span>
+                BIO-7429 · Secure
+              </div>
+            </div>
+          </div>
+          <button class="w-10 h-10 bg-[#1C1C1E] rounded-full flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div class="flex-1 px-6 pb-24">
+          <section id="screen-auth" class="fade-in">
+            <div class="text-center mb-6">
+              <h3 class="text-xl font-bold mb-1">Face Recognition</h3>
+              <p class="text-gray-500 text-xs">Position face within scanner area</p>
+            </div>
+            <div class="relative w-56 h-56 mx-auto mb-6">
+              <div class="absolute inset-0 rounded-full border-4 border-cash-green/30 scanner-ring"></div>
+              <div class="absolute inset-4 rounded-full border-2 border-cash-green/50"></div>
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-40 h-40 rounded-full bg-gradient-to-br from-cash-green/20 to-transparent flex items-center justify-center relative overflow-hidden">
+                  <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="1.5" class="opacity-60">
+                    <circle cx="12" cy="8" r="4"/>
+                    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+                  </svg>
+                  <div class="absolute left-0 right-0 h-0.5 bg-cash-green scan-line"></div>
+                </div>
+              </div>
+              <div class="absolute top-0 left-0 w-7 h-7 border-t-4 border-l-4 border-cash-green rounded-tl-2xl"></div>
+              <div class="absolute top-0 right-0 w-7 h-7 border-t-4 border-r-4 border-cash-green rounded-tr-2xl"></div>
+              <div class="absolute bottom-0 left-0 w-7 h-7 border-b-4 border-l-4 border-cash-green rounded-bl-2xl"></div>
+              <div class="absolute bottom-0 right-0 w-7 h-7 border-b-4 border-r-4 border-cash-green rounded-br-2xl"></div>
+            </div>
+            <div id="matchStatus" class="text-center mb-4 opacity-0 transition-opacity duration-500">
+              <div class="inline-flex items-center gap-2 bg-cash-green/10 border border-cash-green/30 rounded-full px-4 py-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                <span class="cash-green font-bold text-sm">MATCH: 99.7%</span>
+              </div>
+            </div>
+            <div class="grid grid-cols-4 gap-2 mb-6">
+              <div class="card p-2 text-center border-2 border-cash-green">
+                <div class="text-lg mb-0.5">👤</div>
+                <div class="text-[10px] font-semibold">Face ID</div>
+              </div>
+              <div class="card p-2 text-center">
+                <div class="text-lg mb-0.5">👁</div>
+                <div class="text-[10px] font-semibold">Retina</div>
+              </div>
+              <div class="card p-2 text-center">
+                <div class="text-lg mb-0.5">🎤</div>
+                <div class="text-[10px] font-semibold">Voice</div>
+              </div>
+              <div class="card p-2 text-center">
+                <div class="text-lg mb-0.5">🔐</div>
+                <div class="text-[10px] font-semibold">Multi</div>
+              </div>
+            </div>
+            <button onclick="startAuth()" class="btn-primary w-full py-3">Authenticate</button>
+          </section>
+          
+          <section id="screen-transaction" class="hidden fade-in">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-bold">Transaction</h3>
+                <p class="text-[10px] text-gray-500">TX-9847 · Pump #3</p>
+              </div>
+              <div class="bg-cash-green/10 border border-cash-green/30 rounded-full px-2 py-0.5">
+                <span class="cash-green text-[10px] font-bold">⛽ PREMIUM</span>
+              </div>
+            </div>
+            <div class="card p-4 mb-3">
+              <div class="flex items-start justify-between mb-2">
+                <div>
+                  <div class="text-[10px] text-gray-500">Shell V-Power Premium</div>
+                  <div class="text-xs text-gray-400">12.5 gallons</div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xl font-bold">$45.67</div>
+                  <div class="text-[10px] text-gray-500">$3.65/gal</div>
+                </div>
+              </div>
+            </div>
+            <div class="flash-deal rounded-xl p-3 mb-3 relative overflow-hidden">
+              <div class="flex items-center gap-2">
+                <div class="text-2xl">🌶️</div>
+                <div class="flex-1">
+                  <div class="font-bold text-sm">Cool Ranch Doritos</div>
+                  <div class="flex items-baseline gap-1 mt-0.5">
+                    <span class="font-bold">$1.99</span>
+                    <span class="text-[10px] line-through opacity-70">$3.49</span>
+                  </div>
+                </div>
+                <button onclick="addDeal(this)" class="bg-white text-black font-bold px-3 py-1.5 rounded-lg text-xs">Add</button>
+              </div>
+            </div>
+            <div class="card p-4 mb-3">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <div class="w-7 h-7 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-xs">👑</div>
+                  <div>
+                    <div class="font-bold text-xs">Gold Member</div>
+                    <div class="text-[10px] text-gray-500">VIP Active</div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-base font-bold cash-green">2,847</div>
+                  <div class="text-[10px] text-gray-500">Points</div>
+                </div>
+              </div>
+              <div class="h-1.5 bg-[#2C2C2E] rounded-full overflow-hidden">
+                <div class="progress-bar h-full" style="width: 68%"></div>
+              </div>
+            </div>
+            <div class="card p-4 mb-3">
+              <div class="space-y-1.5 text-xs">
+                <div class="flex justify-between"><span class="text-gray-400">Subtotal</span><span>$45.67</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Member Discount</span><span class="cash-green">-$2.28</span></div>
+                <div class="flex justify-between"><span class="text-gray-400">Coupon Savings</span><span class="cash-green">-$0.50</span></div>
+                <div class="h-px bg-white/10 my-1.5"></div>
+                <div class="flex justify-between items-baseline">
+                  <span class="font-bold">Total</span>
+                  <span class="text-2xl font-bold">$42.89</span>
+                </div>
+              </div>
+            </div>
+            <button onclick="authorizePayment()" class="btn-primary w-full py-3 glow">Pay $42.89</button>
+          </section>
+          
+          <section id="screen-success" class="hidden fade-in text-center pt-4">
+            <div class="w-20 h-20 mx-auto mb-4 bg-cash-green rounded-full flex items-center justify-center glow checkmark">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3" stroke-linecap="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold mb-1">Payment Sent!</h3>
+            <p class="text-gray-500 text-xs mb-5">Completed in 1.8 seconds</p>
+            <div class="card p-5 mb-4 text-left">
+              <div class="text-center mb-4">
+                <div class="text-xs text-gray-500 mb-1">Amount Paid</div>
+                <div class="text-4xl font-bold cash-green glow-text">$42.89</div>
+              </div>
+              <div class="h-px bg-white/5 mb-3"></div>
+              <div class="grid grid-cols-3 gap-2 text-center">
+                <div>
+                  <div class="text-[10px] text-gray-500">Points</div>
+                  <div class="font-bold cash-green text-sm">+43</div>
+                </div>
+                <div>
+                  <div class="text-[10px] text-gray-500">Method</div>
+                  <div class="font-bold text-xs">Face ID</div>
+                </div>
+                <div>
+                  <div class="text-[10px] text-gray-500">Security</div>
+                  <div class="font-bold cash-green text-sm">99.7%</div>
+                </div>
+              </div>
+            </div>
+            <button onclick="resetApp()" class="btn-primary w-full py-3">New Transaction</button>
+          </section>
+        </div>
+        
+        <nav class="absolute bottom-0 left-0 right-0 bg-black/90 backdrop-blur-xl border-t border-white/5 px-6 py-3">
+          <div class="flex items-center justify-around">
+            <button class="flex flex-col items-center gap-1 cash-green">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+              <span class="text-[9px] font-semibold">Home</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-500">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              <span class="text-[9px]">Cards</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-500">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+              <span class="text-[9px]">Activity</span>
+            </button>
+            <button class="flex flex-col items-center gap-1 text-gray-500">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              <span class="text-[9px]">Profile</span>
+            </button>
+          </div>
+        </nav>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- PROMOTIONS / REVIEWS -->
+<section id="promotions" class="max-w-7xl mx-auto px-4 py-20">
+  <div class="text-center mb-12">
+    <div class="text-xs cash-green font-bold mb-3">REVIEWS</div>
+    <h2 class="text-3xl md:text-4xl font-bold">What people are saying</h2>
+  </div>
+  <div class="card p-10 text-center">
+    <div class="text-5xl mb-4">💬</div>
+    <div class="text-xl font-semibold mb-2">Reviews coming soon!</div>
+    <div class="text-gray-500">Be the first to share your experience.</div>
+  </div>
+</section>
+
+<div class="section-divider max-w-7xl mx-auto"></div>
+
+<!-- SUBSCRIBE + CONTACT -->
+<section class="max-w-7xl mx-auto px-4 py-20">
+  <div class="grid lg:grid-cols-2 gap-8">
+    <div class="card p-8">
+      <div class="text-xs cash-green font-bold mb-3">SUBSCRIBE</div>
+      <h3 class="text-2xl font-bold mb-2">Sign up to hear from us</h3>
+      <p class="text-gray-500 text-sm mb-6">About specials, sales, and events.</p>
+      <form onsubmit="event.preventDefault(); subscribeUser();" class="flex gap-2">
+        <input id="subEmail" type="email" placeholder="Email Address" required class="flex-1 bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cash-green">
+        <button class="btn-primary px-6 py-3">Sign up</button>
+      </form>
+      <div id="subMsg" class="text-xs cash-green mt-3 hidden">✓ Thanks for subscribing!</div>
+    </div>
+    
+    <div class="card p-8">
+      <div class="text-xs cash-green font-bold mb-3">CONTACT US</div>
+      <h3 class="text-2xl font-bold mb-2">Your Feedback is Appreciated</h3>
+      <p class="text-gray-500 text-sm mb-6">Have a great experience? Is something missing? We love hearing from our users!</p>
+      <form onsubmit="event.preventDefault(); sendFeedback();" class="space-y-3">
+        <input id="fbName" type="text" placeholder="Your name" required class="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cash-green">
+        <textarea id="fbMsg" placeholder="Drop us a line!" rows="3" required class="w-full bg-[#0A0A0A] border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-cash-green resize-none"></textarea>
+        <button class="btn-primary w-full py-3">Send Message</button>
+      </form>
+      <div id="fbMsg2" class="text-xs cash-green mt-3 hidden">✓ Message sent! We'll be in touch.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="border-t border-white/5 mt-10">
+  <div class="max-w-7xl mx-auto px-4 py-12">
+    <div class="grid md:grid-cols-4 gap-8 mb-10">
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="w-9 h-9 bg-cash-green rounded-xl flex items-center justify-center font-black text-black text-lg">M</div>
+          <span class="font-bold text-lg">MyBuy'O</span>
+        </div>
+        <p class="text-sm text-gray-500">The ultimate biometric payment platform by FacePrintPay Inc. — born in North Carolina, built for the future of retail.</p>
+      </div>
+      <div>
+        <div class="font-bold mb-3 text-sm">Product</div>
+        <ul class="space-y-2 text-sm text-gray-500">
+          <li><a href="#biometric" class="hover:text-white">Biometric Solutions</a></li>
+          <li><a href="#api" class="hover:text-white">ID Verification API</a></li>
+          <li><a href="#vault" class="hover:text-white">TotalRecall™ Vault</a></li>
+          <li><a href="#demos" class="hover:text-white">Live Demo</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-bold mb-3 text-sm">Company</div>
+        <ul class="space-y-2 text-sm text-gray-500">
+          <li><a href="#about" class="hover:text-white">About · Cygel White</a></li>
+          <li><a href="#pilot" class="hover:text-white">Pilot Proposal</a></li>
+          <li><a href="#promotions" class="hover:text-white">Promotions</a></li>
+          <li><a href="#" class="hover:text-white">Press</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="font-bold mb-3 text-sm">Ecosystem</div>
+        <ul class="space-y-2 text-sm text-gray-500">
+          <li><a href="#" class="hover:text-white">Constellation25</a></li>
+          <li><a href="#" class="hover:text-white">VideoCourts™</a></li>
+          <li><a href="#" class="hover:text-white">PeNNi™</a></li>
+          <li><a href="#" class="hover:text-white">SovereignGTP</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="section-divider mb-6"></div>
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-gray-500">
+      <div>Copyright © 2026 FacePrintPay Inc. · MyBuy'O™ — All Rights Reserved.</div>
+      <div class="flex items-center gap-4">
+        <span>NC-Born · Built for Retail</span>
+        <span>·</span>
+        <a href="#promotions" class="hover:text-white">Promotions</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Voice Consent Modal -->
+<div id="voiceModal" class="hidden fixed inset-0 modal-overlay z-50 flex items-end justify-center">
+  <div class="bg-[#1C1C1E] rounded-t-3xl w-full max-w-md p-6 slide-up">
+    <div class="text-center mb-5">
+      <div class="w-14 h-14 bg-cash-green/20 rounded-full flex items-center justify-center mx-auto mb-3">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00D632" stroke-width="2">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+        </svg>
+      </div>
+      <h3 class="font-bold text-lg mb-1">Voice Consent Required</h3>
+      <p class="text-xs text-gray-500">Please speak the following phrase clearly</p>
+    </div>
+    <div class="bg-black/40 rounded-xl p-4 mb-4 italic text-sm text-gray-300 border border-white/5">
+      "I agree to the Terms and Conditions and authorize MyBuyO to use my biometric features for secure payment processing."
+    </div>
+    <div id="voiceWave" class="hidden items-center justify-center gap-1 h-10 mb-3">
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 40%; animation-delay: 0s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 70%; animation-delay: 0.1s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 100%; animation-delay: 0.2s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 60%; animation-delay: 0.3s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 80%; animation-delay: 0.4s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 50%; animation-delay: 0.5s"></div>
+      <div class="w-1 bg-cash-green rounded-full wave" style="height: 90%; animation-delay: 0.6s"></div>
+    </div>
+    <div id="voiceStatus" class="text-center text-sm text-gray-500 mb-3">Press & hold to speak</div>
+    <button id="voiceBtn" onmousedown="startVoice()" onmouseup="stopVoice()" ontouchstart="startVoice()" ontouchend="stopVoice()" class="btn-primary w-full py-3 mb-2">🎤 Press & Speak</button>
+    <button onclick="closeVoice()" class="w-full py-2 text-gray-500 text-sm">Cancel</button>
+  </div>
+</div>
+
+<script>
+  function scrollToId(id) {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  
+  function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+  
+  function showScreen(id) {
+    ['screen-auth', 'screen-transaction', 'screen-success'].forEach(s => {
+      document.getElementById(s).classList.add('hidden');
+    });
+    const screen = document.getElementById(id);
+    screen.classList.remove('hidden');
+    screen.classList.remove('fade-in');
+    void screen.offsetWidth;
+    screen.classList.add('fade-in');
+  }
+  
+  function startAuth() {
+    const status = document.getElementById('matchStatus');
+    setTimeout(() => status.style.opacity = '1', 1200);
+    setTimeout(() => showScreen('screen-transaction'), 2400);
+  }
+  
+  function addDeal(btn) {
+    btn.textContent = '✓';
+    btn.disabled = true;
+  }
+  
+  function authorizePayment() {
+    document.getElementById('voiceModal').classList.remove('hidden');
+  }
+  
+  function startVoice() {
+    document.getElementById('voiceWave').classList.remove('hidden');
+    document.getElementById('voiceWave').classList.add('flex');
+    document.getElementById('voiceStatus').textContent = 'Listening... Speak clearly';
+    document.getElementById('voiceBtn').textContent = '🎤 Recording...';
+    document.getElementById('voiceBtn').classList.remove('bg-cash-green');
+    document.getElementById('voiceBtn').classList.add('bg-red-500');
+  }
+  
+  function stopVoice() {
+    document.getElementById('voiceWave').classList.add('hidden');
+    document.getElementById('voiceWave').classList.remove('flex');
+    document.getElementById('voiceStatus').textContent = '✓ Voice captured';
+    document.getElementById('voiceBtn').textContent = '🎤 Press & Speak';
+    document.getElementById('voiceBtn').classList.add('bg-cash-green');
+    document.getElementById('voiceBtn').classList.remove('bg-red-500');
+    setTimeout(() => {
+      closeVoice();
+      showScreen('screen-success');
+    }, 700);
+  }
+  
+  function closeVoice() {
+    document.getElementById('voiceModal').classList.add('hidden');
+  }
+  
+  function resetApp() {
+    document.getElementById('matchStatus').style.opacity = '0';
+    showScreen('screen-auth');
+  }
+  
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', function() {
+      document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+  
+  function subscribeUser() {
+    document.getElementById('subMsg').classList.remove('hidden');
+    document.getElementById('subEmail').value = '';
+  }
+  
+  function sendFeedback() {
+    document.getElementById('fbMsg2').classList.remove('hidden');
+    document.getElementById('fbName').value = '';
+    document.getElementById('fbMsg').value = '';
+  }
+</script>
+
 </body>
 </html>
